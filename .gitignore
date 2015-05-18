@@ -1,0 +1,14 @@
+*.pyc
+__pycache__/
+.DS_Store
+.idea
+*.swp
+MANIFEST
+Dockerfile
+django_root/vendor
+django_root/static
+.tox/
+.ebextensions
+.ropeproject
+*.egg-info
+*.swo
