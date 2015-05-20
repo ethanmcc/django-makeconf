@@ -25,6 +25,12 @@ Create templates in the `templates/` directory of your app. For example, if you 
 	
 This relies on Django's template finder, which is pretty flexible. It will scan all your apps for a template with the same path name. The `Dockerfile` will be generated using the `Dockerfile.tmpl`, and it will have access to the `settings` variable. 
 
+## Options
+
+Currently, there is one option which can be set using `MAKECONF_OPTIONS`:
+
+* `executable_extensions` - Files with extensions in this list will be created executable. Defaults to `['.sh']`.
+
 ## Usage
 
 Assuming you have a `TIER` variable defined as `'qa'` in your settings file and the following template,

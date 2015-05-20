@@ -12,3 +12,4 @@ django_root/static
 .ropeproject
 *.egg-info
 *.swo
+dist/
