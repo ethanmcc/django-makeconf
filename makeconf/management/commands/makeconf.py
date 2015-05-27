@@ -20,7 +20,9 @@ class Command(BaseCommand):
             mode = int('0755', 8)
         else:
             mode = int('0644', 8)
-        with os.fdopen(os.open(dest, os.O_WRONLY | os.O_CREAT, mode), 'w') as file_:
+        with os.fdopen(
+                os.open(dest, os.O_TRUNC | os.O_WRONLY | os.O_CREAT, mode),
+                'w') as file_:
             file_.write(output)
 
     def _get_template_map(self):
