@@ -1,9 +1,26 @@
 # deploy/management/commands/build.py
 
+import os
+import shutil
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.template import loader, Context
-import os
+
+
+class InvalidVarException(object):
+    def __mod__(self, missing):
+        try:
+            missing_str = unicode(missing)
+        except:
+            missing_str = 'Failed to create string representation'
+        raise Exception('Unknown template variable {} {}'.format(missing,
+                                                                 missing_str))
+
+    def __contains__(self, search):
+        if search == '%s':
+            return True
+        return False
 
 
 class Command(BaseCommand):
@@ -30,18 +47,32 @@ class Command(BaseCommand):
             map_ = settings.MAKECONF_MAP
         except AttributeError:
             map_ = {}
+        try:
+            eb_modules = settings.MAKECONF_EB_MODULES
+            if os.path.isdir('.ebextensions'):
+                self.stdout.write('Removing directory .ebextensions')
+                shutil.rmtree('.ebextensions')
+            for count, module in enumerate(eb_modules):
+                key = '.ebextensions/{:02d}_{}.config'.format(count + 1,
+                                                              module)
+                map_[key] = '{}.tmpl'.format(module)
+        except AttributeError:
+            pass
         return map_
 
     def _create_basedirs(self, path):
         dirname = os.path.split(path)[0]
         if dirname:
             if os.path.exists(dirname):
-                self.stdout.write('Directory {} exists'.format(dirname))
+                if dirname != '.ebextensions':
+                    self.stdout.write('Directory {} exists'.format(dirname))
             else:
                 self.stdout.write('Creating directory {}'.format(dirname))
                 os.makedirs(dirname)
 
     def handle(self, *args, **options):
+        settings.TEMPLATE_DEBUG = True
+        settings.TEMPLATE_STRING_IF_INVALID = InvalidVarException()
         if not hasattr(settings, 'MAKECONF_OPTIONS'):
             settings.MAKECONF_OPTIONS = {}
         self.executable_extensions = settings.MAKECONF_OPTIONS.get(
@@ -50,6 +81,6 @@ class Command(BaseCommand):
         context = Context({'settings': settings})
         self.stdout.write('context is: {}'.format(context))
 
-        for path, template in self._get_template_map().items():
+        for path, template in sorted(self._get_template_map().items()):
             self._create_basedirs(path)
             self.render_template(template, path, context)
