@@ -8,6 +8,21 @@ from django.core.management.base import BaseCommand
 from django.template import loader, Context
 
 
+class InvalidVarException(object):
+    def __mod__(self, missing):
+        try:
+            missing_str = unicode(missing)
+        except:
+            missing_str = 'Failed to create string representation'
+        raise Exception('Unknown template variable {} {}'.format(missing,
+                                                                 missing_str))
+
+    def __contains__(self, search):
+        if search == '%s':
+            return True
+        return False
+
+
 class Command(BaseCommand):
     help = 'Build Dockerfile and .ebextensions/ files'
 
@@ -56,6 +71,8 @@ class Command(BaseCommand):
                 os.makedirs(dirname)
 
     def handle(self, *args, **options):
+        settings.TEMPLATE_DEBUG = True
+        settings.TEMPLATE_STRING_IF_INVALID = InvalidVarException()
         if not hasattr(settings, 'MAKECONF_OPTIONS'):
             settings.MAKECONF_OPTIONS = {}
         self.executable_extensions = settings.MAKECONF_OPTIONS.get(
