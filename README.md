@@ -25,6 +25,22 @@ Create templates in the `templates/` directory of your app. For example, if you 
 	
 This relies on Django's template finder, which is pretty flexible. It will scan all your apps for a template with the same path name. The `Dockerfile` will be generated using the `Dockerfile.tmpl`, and it will have access to the `settings` variable. 
 
+## Elastic Beanstalk Modules
+
+Elastic Beanstalk configuration files can be declared using `MAKECONF_EB_MODULES`. Templates named `<module_name>.tmpl` can be referenced in a list by the module name. If you had a `newrelic` module and a `postgres` module that each configure your server with packages, files, etc., you can automatically turn the following format:
+
+    MAKECONF_EB_MODULES = ['postgres', 'newrelic']
+
+Into additional `MAKECONF_MAP` entries like so:
+
+    MAKECONF_MAP = {
+        ...
+        '.ebextensions/01_postgres.config': 'postgres.tmpl',
+        '.ebextensions/02_newrelic.config': 'newrelic.tmpl',
+    }
+
+If `MAKECONF_EB_MODULES` is set, `.ebextensions` will be erased with each build.
+
 ## Options
 
 Currently, there is one option which can be set using `MAKECONF_OPTIONS`:
