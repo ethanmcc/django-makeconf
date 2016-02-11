@@ -65,6 +65,17 @@ you could run
 	
 and `{{ settings.TIER }}` would be replaced with `qa` in the output file.
 
+## Template Tags
+
+* `environ` - The `environ` tag is used to get required variables from the shell environment:
+ 	* To use it, first, load the `makeconf` template tags in your template:
+
+	    	{% load makeconf %}
+
+	* Then, use the tag in that template:
+
+			{{'MY_ENVIRONMENT_VARIABLE'|environ}}
+
 ## Shared Templates
 
 If people use this, I could see shareable formats published for different services and needs. I'm currently using it to build Elastic Beanstalk and Docker configurations based on my Django settings, so I may end up publishing Django apps with names like `django-makeconf-elasticbeanstalk-configure-proxy`, or `django-makeconf-eb-docker-settings-module`, which would simply contain templates in their `templates/` directories (plus a `setup.py` and a `MANIFEST.in` that included the template files). You'd be able to pip install those templates and use them directly in your `MAKECONF_MAP`.
