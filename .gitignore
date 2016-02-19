@@ -13,3 +13,6 @@ django_root/static
 *.egg-info
 *.swo
 dist/
+
+
+*sublime*

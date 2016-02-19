@@ -5,7 +5,7 @@ import shutil
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.template import loader, Context
+from django.template import loader
 
 
 class InvalidVarException(object):
@@ -78,7 +78,7 @@ class Command(BaseCommand):
         self.executable_extensions = settings.MAKECONF_OPTIONS.get(
             'executable_extensions', ['.sh'])
 
-        context = Context({'settings': settings})
+        context = {'settings': settings}
         self.stdout.write('context is: {}'.format(context))
 
         for path, template in sorted(self._get_template_map().items()):
